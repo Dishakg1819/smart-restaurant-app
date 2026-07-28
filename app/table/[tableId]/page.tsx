@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
+import { collection, addDoc } from "firebase/firestore"
+import { db, auth } from "@/lib/firebase"
 
 export type TableStatus = "available" | "reserved" | "occupied"
 
@@ -36,6 +38,8 @@ export default function TablePage() {
   const [selectedTime, setSelectedTime] = useState<string>("07:00 PM")
   const [isBooked, setIsBooked] = useState<boolean>(false)
 
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
   // Filter tables based on location
   const filteredTables = useMemo(() => {
     return tables.filter((t) => {
@@ -43,9 +47,28 @@ export default function TablePage() {
     })
   }, [tables, selectedLocation])
 
-  const handleBookTable = () => {
+  const handleBookTable = async () => {
     if (!selectedTable) return
-    setIsBooked(true)
+    setIsSubmitting(true)
+    try {
+      await addDoc(collection(db, "reservations"), {
+        user_id: auth.currentUser?.uid || "guest",
+        table_id: selectedTable.id,
+        table_number: selectedTable.number,
+        location: selectedTable.location,
+        guests: guests,
+        time: selectedTime,
+        min_spend: selectedTable.minSpend,
+        created_at: new Date().toISOString(),
+        status: "confirmed"
+      })
+      setIsBooked(true)
+    } catch (error) {
+      console.error("Error booking table:", error)
+      alert("Failed to book table. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -251,9 +274,10 @@ export default function TablePage() {
                 {/* Confirm Button */}
                 <button
                   onClick={handleBookTable}
-                  className="w-full rounded-xl bg-[#C67D3B] py-3 text-center text-xs font-bold uppercase tracking-wider text-[#0C0B0A] transition hover:bg-[#d88d4a]"
+                  disabled={isSubmitting}
+                  className="w-full flex justify-center rounded-xl bg-[#C67D3B] py-3 text-center text-xs font-bold uppercase tracking-wider text-[#0C0B0A] transition hover:bg-[#d88d4a] disabled:opacity-50"
                 >
-                  Confirm Reservation
+                  {isSubmitting ? "Booking..." : "Confirm Reservation"}
                 </button>
               </div>
             )}
