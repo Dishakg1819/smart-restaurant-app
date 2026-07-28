@@ -352,14 +352,14 @@ export default function AdminOrdersPage() {
                                     <span className="font-bold text-[#C67D3B] mr-1.5">{item.quantity}x</span>
                                     {item.name}
                                   </span>
-                                  <span className="text-[#8C7B70]">${(item.price * item.quantity).toFixed(2)}</span>
+                                  <span className="text-[#8C7B70]">₹{(item.price * item.quantity).toFixed(2)}</span>
                                 </li>
                               ))}
                             </ul>
                           </div>
 
                           <div className="mt-3 pt-2 border-t border-[#241E1A] flex items-center justify-between">
-                            <span className="font-semibold text-xs text-[#C67D3B]">${order.total_amount.toFixed(2)}</span>
+                            <span className="font-semibold text-xs text-[#C67D3B]">₹{order.total_amount.toFixed(2)}</span>
                             <div className="flex gap-1">
                               {column.id === 'pending' && (
                                 <button
@@ -409,7 +409,7 @@ export default function AdminOrdersPage() {
                 </div>
                 <div>
                   <p className="text-xs text-[#8C7B70] font-medium">Shift Revenue</p>
-                  <p className="text-2xl font-bold text-[#E6E1DC]">${totalRevenue.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-[#E6E1DC]">₹{totalRevenue.toFixed(2)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 rounded-2xl border border-[#241E1A] bg-[#12100E] p-5">
@@ -428,7 +428,7 @@ export default function AdminOrdersPage() {
                 <div>
                   <p className="text-xs text-[#8C7B70] font-medium">Avg. Order Value</p>
                   <p className="text-2xl font-bold text-[#E6E1DC]">
-                    ${orders.length ? (totalRevenue / orders.length).toFixed(2) : '0.00'}
+                    ₹{orders.length ? (totalRevenue / orders.length).toFixed(2) : '0.00'}
                   </p>
                 </div>
               </div>
@@ -445,7 +445,7 @@ export default function AdminOrdersPage() {
                       <YAxis tickLine={false} axisLine={false} stroke="#8C7B70" className="text-xs" />
                       <Tooltip
                         contentStyle={{ backgroundColor: '#171412', borderRadius: '12px', borderColor: '#241E1A', color: '#E6E1DC' }}
-                        formatter={(value: any) => [`$${value}`, 'Revenue']}
+                        formatter={(value: any) => [`₹${value}`, 'Revenue']}
                       />
                       <Bar dataKey="revenue" fill="#C67D3B" radius={[6, 6, 0, 0]} />
                     </BarChart>
