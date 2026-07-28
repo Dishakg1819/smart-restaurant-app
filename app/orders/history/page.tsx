@@ -2,13 +2,8 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { createClient } from "@supabase/supabase-js"
-
-// Initialize Supabase Client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-)
+import { collection, query, where, orderBy, getDocs } from "firebase/firestore"
+import { db, auth } from "@/lib/firebase"
 
 type OrderItem = {
   id?: string
@@ -31,30 +26,39 @@ export default function OrdersPage() {
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
-    fetchUserAndOrders()
+    // Wait for auth to initialize
+    const unsubscribe = auth.onAuthStateChanged((u) => {
+      setUser(u)
+      if (u) {
+        fetchOrders(u.uid)
+      } else {
+        setLoading(false)
+      }
+    })
+    return () => unsubscribe()
   }, [])
 
-  const fetchUserAndOrders = async () => {
+  const fetchOrders = async (userId: string) => {
     setLoading(true)
-
-    // 1. Get current logged-in user
-    const { data: { user } } = await supabase.auth.getUser()
-    setUser(user)
-
-    // 2. If authenticated, fetch orders tied to their user_id
-    if (user) {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-
-      if (!error && data) {
-        setOrders(data)
-      }
+    try {
+      const q = query(
+        collection(db, "orders"),
+        where("user_id", "==", userId),
+        orderBy("created_at", "desc")
+      )
+      
+      const querySnapshot = await getDocs(q)
+      const fetchedOrders = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Order[]
+      
+      setOrders(fetchedOrders)
+    } catch (error) {
+      console.error("Error fetching orders:", error)
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   // Helper to color-code order status badges

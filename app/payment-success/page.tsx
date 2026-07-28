@@ -2,12 +2,8 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { createClient } from "@supabase/supabase-js"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-)
+import { collection, addDoc } from "firebase/firestore"
+import { db, auth } from "@/lib/firebase"
 
 export default function PaymentSuccessPage() {
   const [order, setOrder] = useState<any>(null)
@@ -27,21 +23,22 @@ export default function PaymentSuccessPage() {
     const orderData = JSON.parse(rawData)
     setOrder(orderData)
 
-    // Retrieve active logged-in user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    try {
+      const user = auth.currentUser
 
-    if (user) {
-      // Save order to Supabase referenced to auth.uid()
-      await supabase.from("orders").insert([
-        {
-          user_id: user.id,
+      if (user) {
+        // Save order to Firestore
+        await addDoc(collection(db, "orders"), {
+          user_id: user.uid,
           total_amount: orderData.grandTotal,
           status: "Paid",
           items: orderData.items,
-        },
-      ])
+          created_at: new Date().toISOString(),
+          table_number: Math.floor(Math.random() * 20) + 1 // mock table for now
+        })
+      }
+    } catch (e) {
+      console.error("Error saving order:", e)
     }
 
     // Clear saved cart after successful payment

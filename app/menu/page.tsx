@@ -112,6 +112,7 @@ export default function MenuPage() {
             <div className="relative flex-1">
               <input
                 type="text"
+                suppressHydrationWarning
                 placeholder="Search dishes, ingredients, or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
