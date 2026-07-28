@@ -1,8 +1,20 @@
 "use client"
 
-import { CartLine } from "@/app/menu/page" // Adjust path if needed
 import { MenuItem } from "@/lib/order-data"
 import { ShoppingBag, X, Plus, Minus } from "lucide-react"
+
+// Explicitly defined and exported CartLine interface matching component usage
+export type CartLine = {
+  id: string
+  quantity: number
+  item: {
+    id: string
+    name: string
+    price: number
+    image?: string
+    [key: string]: any
+  }
+}
 
 export interface CartDrawerProps {
   open: boolean
@@ -11,8 +23,8 @@ export interface CartDrawerProps {
   onAdd: (item: MenuItem) => void
   onRemove: (item: MenuItem) => void
   tableNumber: number
-  onCheckout?: () => Promise<void> | void // Added optional checkout handler
-  isSubmitting?: boolean                  // Added submission state
+  onCheckout?: () => Promise<void> | void
+  isSubmitting?: boolean
 }
 
 export function CartDrawer({
@@ -74,7 +86,7 @@ export function CartDrawer({
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => onRemove(item)}
+                      onClick={() => onRemove(item as MenuItem)}
                       className="flex h-7 w-7 items-center justify-center rounded-md border border-border bg-background text-foreground hover:bg-muted"
                     >
                       <Minus className="h-3.5 w-3.5" />
@@ -83,7 +95,7 @@ export function CartDrawer({
                       {quantity}
                     </span>
                     <button
-                      onClick={() => onAdd(item)}
+                      onClick={() => onAdd(item as MenuItem)}
                       className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       <Plus className="h-3.5 w-3.5" />
