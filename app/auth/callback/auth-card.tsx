@@ -3,6 +3,9 @@
 import type React from 'react'
 
 import { useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, googleProvider } from '@/lib/firebase'
 import { ArrowLeft, ArrowRight, Loader2, Mail, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -11,6 +14,7 @@ type Step = 'email' | 'otp'
 const OTP_LENGTH = 6
 
 export function AuthCard() {
+  const router = useRouter()
   const [step, setStep] = useState<Step>('email')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState<string | null>(null)
@@ -35,9 +39,20 @@ export function AuthCard() {
     }, 900)
   }
 
-  function handleGoogle() {
+  async function handleGoogle() {
     setLoading(true)
-    setTimeout(() => setLoading(false), 900)
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      if (result.user) {
+        router.push('/dashboard')
+        router.refresh()
+      }
+    } catch (error: any) {
+      console.error("Google sign in error:", error)
+      alert("Failed to sign in with Google. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   function setDigit(index: number, value: string) {

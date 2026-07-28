@@ -3,6 +3,8 @@
 import type React from 'react'
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, googleProvider } from '@/lib/firebase'
 import { ArrowLeft, ArrowRight, Loader2, Mail, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -40,13 +42,20 @@ export function AuthCard() {
   }
 
   // 2. Fake Google OAuth Sign-In Logic
-  function handleGoogle() {
+  async function handleGoogle() {
     setLoading(true)
-    setTimeout(() => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      if (result.user) {
+        router.push('/dashboard')
+        router.refresh()
+      }
+    } catch (error: any) {
+      console.error("Google sign in error:", error)
+      alert("Failed to sign in with Google. Please try again.")
+    } finally {
       setLoading(false)
-      router.push('/dashboard') // Redirect directly on fake Google click
-      router.refresh()
-    }, 1000)
+    }
   }
 
   // 3. Fake OTP Verification Logic

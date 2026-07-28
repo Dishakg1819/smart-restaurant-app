@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { signInWithPopup } from "firebase/auth"
+import { auth, googleProvider } from "@/lib/firebase"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,13 +23,19 @@ export default function LoginPage() {
   }
 
   // Handle Google OAuth Sign-In -> Redirect to /menu
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setIsLoading(true)
-
-    setTimeout(() => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider)
+      if (result.user) {
+        router.push("/menu")
+      }
+    } catch (error: any) {
+      console.error("Google sign in error:", error)
+      alert("Failed to sign in with Google: " + error.message)
+    } finally {
       setIsLoading(false)
-      router.push("/menu")
-    }, 1000)
+    }
   }
 
   return (

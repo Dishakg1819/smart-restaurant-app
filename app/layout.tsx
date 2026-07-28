@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css"; // your global styles
+import { HeaderAuth } from "@/components/header-auth";
 
 export const metadata: Metadata = {
   title: "Marigold Smart Restaurant",
@@ -50,12 +51,7 @@ export default function RootLayout({
                 KDS / Admin
               </Link>
 
-              <Link 
-                href="/login" 
-                className="ml-2 rounded-full bg-[#C67D3B] px-4 py-1.5 font-semibold text-[#0C0B0A] hover:bg-[#d88d4a] transition"
-              >
-                Sign In
-              </Link>
+              <HeaderAuth />
             </nav>
 
           </div>
