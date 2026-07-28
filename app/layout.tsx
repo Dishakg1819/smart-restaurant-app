@@ -44,14 +44,7 @@ export default function RootLayout({
                 Table No
               </Link>
 
-              <Link 
-                href="/admin/orders" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg px-3 py-1.5 text-[#B8A89A] hover:bg-[#2A2420] hover:text-[#E6E1DC] transition"
-              >
-                KDS / Admin
-              </Link>
+
 
               <HeaderAuth />
             </nav>
