@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { Plus, Minus, ShoppingBag, Trash2, ChevronUp, X } from 'lucide-react'
 import type { MenuItem } from '@/lib/menu-data'
 import { Button } from '@/components/ui/button'
@@ -27,8 +28,25 @@ function CartBody({
   onRemove,
   onClear,
 }: Omit<CartPreviewProps, 'totalItems'>) {
+  const router = useRouter()
   const tax = subtotal * TAX_RATE
   const total = subtotal + tax
+
+  const handleCheckout = () => {
+    // Map lines to the format expected by the checkout page
+    const checkoutCart = lines.map(line => ({
+      id: line.item.id,
+      name: line.item.name,
+      price: line.item.price,
+      quantity: line.quantity
+    }))
+    
+    // Save to localStorage
+    localStorage.setItem('marigold_cart', JSON.stringify(checkoutCart))
+    
+    // Navigate to checkout
+    router.push('/checkout')
+  }
 
   return (
     <>
@@ -126,7 +144,10 @@ function CartBody({
               <dd className="tabular-nums">${total.toFixed(2)}</dd>
             </div>
           </dl>
-          <Button className="mt-4 w-full rounded-xl py-6 text-base font-semibold">
+          <Button 
+            onClick={handleCheckout}
+            className="mt-4 w-full rounded-xl py-6 text-base font-semibold"
+          >
             Checkout
           </Button>
         </div>

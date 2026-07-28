@@ -23,28 +23,31 @@ export default function PaymentSuccessPage() {
     const orderData = JSON.parse(rawData)
     setOrder(orderData)
 
-    try {
-      const user = auth.currentUser
-
+    // Wait for auth to initialize before saving
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        // Save order to Firestore
-        await addDoc(collection(db, "orders"), {
-          user_id: user.uid,
-          total_amount: orderData.grandTotal,
-          status: "Paid",
-          items: orderData.items,
-          created_at: new Date().toISOString(),
-          table_number: Math.floor(Math.random() * 20) + 1 // mock table for now
-        })
+        try {
+          // Save order to Firestore
+          await addDoc(collection(db, "orders"), {
+            user_id: user.uid,
+            total_amount: orderData.grandTotal,
+            status: "Paid",
+            items: orderData.items,
+            created_at: new Date().toISOString(),
+            table_number: Math.floor(Math.random() * 20) + 1 // mock table for now
+          })
+        } catch (e) {
+          console.error("Error saving order:", e)
+        }
       }
-    } catch (e) {
-      console.error("Error saving order:", e)
-    }
-
-    // Clear saved cart after successful payment
-    localStorage.removeItem("marigold_cart")
-    localStorage.removeItem("pending_order")
-    setIsSaving(false)
+      
+      // Clear saved cart after successful payment attempt
+      localStorage.removeItem("marigold_cart")
+      localStorage.removeItem("pending_order")
+      setIsSaving(false)
+      
+      unsubscribe() // Stop listening after we process the order
+    })
   }
 
   return (
