@@ -10,7 +10,7 @@ import {
   BarChart3,
   TrendingUp,
   ShoppingBag,
-  DollarSign,
+  IndianRupee,
   Sparkles,
   Bot,
   Loader2,
@@ -405,7 +405,7 @@ export default function AdminOrdersPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="flex items-center gap-4 rounded-2xl border border-[#241E1A] bg-[#12100E] p-5">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#C67D3B]/10 text-[#C67D3B] border border-[#C67D3B]/20">
-                  <DollarSign className="size-6" />
+                  <IndianRupee className="size-6" />
                 </div>
                 <div>
                   <p className="text-xs text-[#8C7B70] font-medium">Shift Revenue</p>
