@@ -87,7 +87,7 @@ export default function PaymentSuccessPage() {
         {/* Actions */}
         <div className="flex flex-col gap-3">
           <Link
-            href="/orders"
+            href="/orders/history"
             className="w-full rounded-xl bg-[#C67D3B] py-3.5 text-xs font-bold uppercase tracking-wider text-[#0C0B0A] transition hover:bg-[#d88d4a]"
           >
             View Order History
