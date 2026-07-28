@@ -41,10 +41,12 @@ export default function OrdersPage() {
   const fetchOrders = async (userId: string) => {
     setLoading(true)
     try {
+      // We removed orderBy("created_at", "desc") from the query because Firebase
+      // requires a manually created Composite Index for where() + orderBy().
+      // Instead, we just fetch the user's orders and sort them locally!
       const q = query(
         collection(db, "orders"),
-        where("user_id", "==", userId),
-        orderBy("created_at", "desc")
+        where("user_id", "==", userId)
       )
       
       const querySnapshot = await getDocs(q)
@@ -52,6 +54,11 @@ export default function OrdersPage() {
         id: doc.id,
         ...doc.data(),
       })) as Order[]
+      
+      // Sort orders locally (newest first)
+      fetchedOrders.sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
       
       setOrders(fetchedOrders)
     } catch (error) {
